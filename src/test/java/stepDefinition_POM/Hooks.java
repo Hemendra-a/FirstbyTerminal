@@ -1,0 +1,37 @@
+package stepDefinition_POM;
+
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
+
+import io.cucumber.java.After;
+import io.cucumber.java.AfterStep;
+import io.cucumber.java.Scenario;
+import utils.Testcontextsetup;
+
+public class Hooks {
+	Testcontextsetup Testcontextsetup;
+	public Hooks (Testcontextsetup Testcontextsetup) {
+		this.Testcontextsetup=Testcontextsetup;
+	}
+@After
+public void AfterScenario() throws IOException {
+	 Testcontextsetup.PageObjectManager.driver.quit();
+	 Testcontextsetup.testbase.WebDriverManager().quit();
+}
+
+@AfterStep
+public void AddScreenShot(Scenario scenario) throws IOException {
+	WebDriver driver=Testcontextsetup.testbase.WebDriverManager();
+	if(scenario.isFailed()) {
+		File sourcePath=((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+		byte[] fileContent=FileUtils.readFileToByteArray(sourcePath);
+		scenario.attach(fileContent, "image/png", "image");
+	}
+	System.out.println("am here");
+}
+}
